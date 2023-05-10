@@ -1,61 +1,52 @@
-<!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Motivational Quotes</title>
-  <style>
-    body {
-      font-family: Arial, sans-serif;
-      text-align: center;
-      background-color: #000;
-    }
-    h1, #date, #countdown, #quote, #legendary {
-      color: #ffd700;
-    }
-    #date, #countdown {
-      font-size: 2em;
-      margin-top: 1em;
-    }
-    #quote {
-      font-size: 1.5em;
-      font-style: italic;
-      margin-top: 10em;
-    }
-    #legendary {
-      font-size: 3em;
-      font-weight: bold;
-      position: absolute;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      margin: 1em 0;
-    }
-  </style>
-  <script>
-    function countdown() {
-      const now = new Date();
-      const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
-      const diff = endOfDay - now;
-      const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
-      const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
-      const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
-      document.getElementById("countdown").innerHTML = hoursLeft + " hours " + minutesLeft + " minutes " + secondsLeft + " seconds left to make sh*t happen";
-      
-      const options = { year: 'numeric', month: 'long', day: 'numeric' };
-      document.getElementById("date").innerHTML = now.toLocaleDateString('en-US', options);
-      
-      setTimeout(countdown, 1000); // Update every second
-    }
-  </script>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
 </head>
-<body onload="countdown()">
-  <h1>Motivational Quotes</h1>
-  <div id="date"></div>
-  <div id="countdown"></div>
-  <div id="quote">
-    "Believe you can and you're halfway there." - Theodore Roosevelt
-  </div>
-  <div id="legendary">F*CK AVERAGE, BE LEGENDARY.</div>
+<body>
+    <script>
+        const sheetID = '1rFK6akhN7nJ-SOkI6pamWwA-CoF3Ab8C1-zVP-xI2Bw';
+const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
+const sheetName = 'ray';
+const query = encodeURIComponent('Select *');
+const url = `${base}&sheet=${sheetName}&tq=${query}`;
+const data = [];
+document.addEventListener('DOMContentLoaded',init);
+ 
+function init(){
+    console.log('ready');
+    fetch(url)
+    .then(res => res.text())
+    .then(rep => {
+        //console.log(rep);
+        const jsData = JSON.parse(rep.substr(47).slice(0,-2));
+        console.log(jsData);
+        const colz = [];
+        jsData.table.cols.forEach((heading)=>{
+            if(heading.label) {
+            colz.push(heading.label.toLowerCase().replace(/\s/g,''));
+            }
+        })
+        jsData.table.rows.forEach((main)=>{
+            //console.log(main);
+            const row = {};
+            colz.forEach((ele,ind)=>{
+                //console.log(ele);
+                row[ele] = (main.c[ind] != null) ? main.c[ind].v : '';
+            })
+            data.push(row);
+        })
+        //console.log(jsData.table.rows[1].c[0].v);
+        const link = jsData.table.rows[0].c[3].v;
+        console.log(link);
+        document.getElementById("demo").innerHTML = window.location.replace(link);
+
+    })
+}
+
+    </script>
+    <p id="demo"></p>
 </body>
 </html>
