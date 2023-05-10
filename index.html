@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Motivational Quotes</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background-color: #000;
+    }
+    h1, #date, #countdown, #quote, #legendary {
+      color: #ffd700;
+    }
+    #date, #countdown {
+      font-size: 2em;
+      margin-top: 1em;
+    }
+    #quote {
+      font-size: 1.5em;
+      font-style: italic;
+      margin-top: 10em;
+    }
+    #legendary {
+      font-size: 3em;
+      font-weight: bold;
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      margin: 1em 0;
+    }
+  </style>
+  <script>
+    function countdown() {
+      const now = new Date();
+      const endOfDay = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0);
+      const diff = endOfDay - now;
+      const hoursLeft = Math.floor(diff / (1000 * 60 * 60));
+      const minutesLeft = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+      const secondsLeft = Math.floor((diff % (1000 * 60)) / 1000);
+      document.getElementById("countdown").innerHTML = hoursLeft + " hours " + minutesLeft + " minutes " + secondsLeft + " seconds left to make sh*t happen";
+      
+      const options = { year: 'numeric', month: 'long', day: 'numeric' };
+      document.getElementById("date").innerHTML = now.toLocaleDateString('en-US', options);
+      
+      setTimeout(countdown, 1000); // Update every second
+    }
+  </script>
+</head>
+<body onload="countdown()">
+  <h1>Motivational Quotes</h1>
+  <div id="date"></div>
+  <div id="countdown"></div>
+  <div id="quote">
+    "Believe you can and you're halfway there." - Theodore Roosevelt
+  </div>
+  <div id="legendary">F*CK AVERAGE, BE LEGENDARY.</div>
+</body>
+</html>
