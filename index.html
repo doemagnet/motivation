@@ -1,52 +1,157 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Time Progress Bar</title>
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;500;600;700;800;900&display=swap');
+
+    body {
+      font-family: 'Orbitron', sans-serif;
+      background-color: #111;
+      color: #aaf;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      height: 100vh;
+      margin: 0;
+    }
+
+    h1, h2 {
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 4px;
+      animation: glow 2s ease-in-out infinite alternate;
+    }
+
+    h1 {
+      font-size: 36px;
+    }
+
+    h2 {
+      font-size: 24px;
+    }
+
+    p {
+      font-size: 18px;
+      font-weight: 500;
+    }
+
+    .progress {
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 2px solid #aaf;
+      border-radius: 20px;
+      height: 30px;
+      width: 80%;
+      margin: 0 auto;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .progress::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, rgba(170, 170, 255, 0.2) 25%, rgba(0, 0, 0, 0) 50%, rgba(170, 170, 255, 0.2) 75%);
+      animation: scan 2s linear infinite;
+    }
+
+    .progress-bar {
+      background-color: transparent;
+      height: 100%;
+      width: 100%;
+      position: relative;
+    }
+
+    .diamond {
+      width: 0;
+      height: 0;
+      border: 15px solid transparent;
+      border-bottom-color: #aaf;
+      position: absolute;
+      top: -15px;
+    }
+
+    .diamond:after {
+      content: "";
+      width: 0;
+      height: 0;
+      border: 15px solid transparent;
+      border-top-color: #aaf;
+      position: absolute;
+      top: 30px;
+      left: -15px;
+    }
+
+    @keyframes glow {
+      0% {
+        text-shadow: 0 0 5px #aaf, 0 0 10px #aaf, 0 0 15px #aaf, 0 0 20px #aaf;
+      }
+      100% {
+        text-shadow: 0 0 10px #aaf, 0 0 20px #aaf, 0 0 30px #aaf, 0 0 40px #aaf;
+      }
+    }
+
+    @keyframes scan {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+  </style>
 </head>
 <body>
-    <script>
-        const sheetID = '1rFK6akhN7nJ-SOkI6pamWwA-CoF3Ab8C1-zVP-xI2Bw';
-const base = `https://docs.google.com/spreadsheets/d/${sheetID}/gviz/tq?`;
-const sheetName = 'ray';
-const query = encodeURIComponent('Select *');
-const url = `${base}&sheet=${sheetName}&tq=${query}`;
-const data = [];
-document.addEventListener('DOMContentLoaded',init);
  
-function init(){
-    console.log('ready');
-    fetch(url)
-    .then(res => res.text())
-    .then(rep => {
-        //console.log(rep);
-        const jsData = JSON.parse(rep.substr(47).slice(0,-2));
-        console.log(jsData);
-        const colz = [];
-        jsData.table.cols.forEach((heading)=>{
-            if(heading.label) {
-            colz.push(heading.label.toLowerCase().replace(/\s/g,''));
-            }
-        })
-        jsData.table.rows.forEach((main)=>{
-            //console.log(main);
-            const row = {};
-            colz.forEach((ele,ind)=>{
-                //console.log(ele);
-                row[ele] = (main.c[ind] != null) ? main.c[ind].v : '';
-            })
-            data.push(row);
-        })
-        //console.log(jsData.table.rows[1].c[0].v);
-        const link = jsData.table.rows[0].c[3].v;
-        console.log(link);
-        document.getElementById("demo").innerHTML = window.location.replace(link);
+<h1 id="currentDate"></h1>
+  <h2>"Believe you can and you're halfway there."</h2>
+  <p><span id="timeLeft"></span> left to make something happen today</p>
+  <div class="progress">
+    <div class="progress-bar" id="progressBar">
+      <div class="diamond" id="diamond"></div>
+    </div>
+  </div>
+  <script>
+    function updateTime() {
+      const now = new Date();
+      const hours = now.getHours();
+      const minutes = now.getMinutes();
+      const seconds = now.getSeconds();
 
-    })
-}
+      const totalSecondsInDay = 24 * 60 * 60;
+      const elapsedSeconds = hours * 60 * 60 + minutes * 60 + seconds;
+      const remainingSeconds = totalSecondsInDay - elapsedSeconds;
 
-    </script>
-    <p id="demo"></p>
+      const progressBar = document.getElementById("progressBar");
+      const diamond = document.getElementById("diamond");
+      const timeLeft = document.getElementById("timeLeft");
+      const currentDate = document.getElementById("currentDate");
+
+      const progressPercentage = (elapsedSeconds / totalSecondsInDay) * 100;
+
+      diamond.style.left = progressPercentage + "%";
+
+      const remainingHours = Math.floor(remainingSeconds / 3600);
+      const remainingMinutes = Math.floor((remainingSeconds % 3600) / 60);
+      const remainingSecondsDisplay = remainingSeconds % 60;
+
+      const monthNames = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+      const month = monthNames[now.getMonth()];
+      const day = now.getDate();
+      const year = now.getFullYear();
+      const ordinal = day % 10 === 1 && day !== 11 ? "st" : day % 10 === 2 && day !== 12 ? "nd" : day % 10 === 3 && day !== 13 ? "rd" : "th";
+
+      currentDate.innerHTML = `${month} ${day}${ordinal}, ${year}`;
+      timeLeft.innerHTML = `${remainingHours}h ${remainingMinutes}m ${remainingSecondsDisplay}s`;
+    }
+
+    setInterval(updateTime, 1000);
+  </script>
 </body>
 </html>
